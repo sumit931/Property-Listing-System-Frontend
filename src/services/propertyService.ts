@@ -302,4 +302,20 @@ export const updateProperty = async (propertyId: string, propertyData: Partial<N
   }
 };
 
+export const recommendProperty = async (propertyId: string, email: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/recommendProperty/`, 
+      { propertyId, email },
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error recommending property:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      throw error.response.data.message || error.response.data || error;
+    }
+    throw error;
+  }
+};
+
 // ... (updateProperty service will be added later) ... 
