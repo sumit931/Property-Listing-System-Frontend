@@ -5,23 +5,20 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 5173, // Explicitly setting port, though usually default
     proxy: {
+      // Proxy for /auth requests
       '/auth': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3000', // Your backend server for auth
         changeOrigin: true,
-        secure: false,
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log(`[vite] proxying request: ${req.method} ${req.url}`);
-            console.log('Sending Request to Target:', proxyReq.path);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Received Response from Target:', proxyRes.statusCode, req.url);
-          });
-        },
+        secure: false, // If backend is not HTTPS
+      },
+      // Proxy for /api requests (for property listings, etc.)
+      '/api': {
+        target: 'http://localhost:3000', // Your backend server for API
+        changeOrigin: true,
+        secure: false, // If backend is not HTTPS
+        rewrite: (path) => path.replace(/^\/api/, ''), // Remove /api prefix before sending to backend
       }
     }
   }
