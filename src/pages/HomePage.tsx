@@ -14,7 +14,10 @@ const HomePage = () => {
             <Link to="/liked-property">Liked Properties</Link>
           </li>
           <li>
-            <Link to="/suggested-property">Suggested Properties</Link>
+            <Link to="/property-recommended">Property Recommendations</Link>
+          </li>
+          <li>
+            <Link to="/my-listed-properties">My Listed Properties</Link>
           </li>
         </ul>
       </nav>

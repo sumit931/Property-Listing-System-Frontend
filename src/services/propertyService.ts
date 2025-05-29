@@ -153,4 +153,153 @@ export const getCitiesByState = async (stateId: string) => {
   }
 };
 
-// ... (updateProperty, deleteProperty services will be added later) 
+export const addToFavourites = async (propertyId: string) => {
+  try {
+    const response = await axios.patch(
+      `${API_URL}/favProperty/add`, // Path will be /api/favProperty/add, proxied to /favProperty/add
+      { propertyId }, // Request body
+      { headers: getAuthHeaders() } // Auth headers
+    );
+    return response.data; // Assuming backend returns some confirmation or the updated fav list/property
+  } catch (error) {
+    console.error('Error adding to favourites:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      throw error.response.data.message || error.response.data || error;
+    }
+    throw error;
+  }
+};
+
+export const getFavouriteProperties = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/favProperty/property`, {
+      headers: getAuthHeaders(),
+    });
+    // Check for the specific key "favProperty" first based on user's JSON response
+    if (response.data && Array.isArray(response.data.favProperty)) {
+        return response.data.favProperty;
+    }
+    // Fallback checks (though the above should be the primary one now)
+    if (Array.isArray(response.data)) {
+        return response.data;
+    }
+    if (response.data && Array.isArray(response.data.favouriteProperties)) {
+        return response.data.favouriteProperties;
+    }
+    if (response.data && Array.isArray(response.data.properties)) {
+        return response.data.properties;
+    }
+    console.warn('Unexpected response structure for favourite properties or favProperty array not found:', response.data);
+    return []; // Return empty array if data is not in expected array format
+  } catch (error) {
+    console.error('Error fetching favourite properties:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      throw error.response.data.message || error.response.data || error;
+    }
+    throw error;
+  }
+};
+
+export const removeFromFavourites = async (propertyId: string) => {
+  try {
+    // Path changed to /favProperty/remove
+    // propertyId will be sent in the request body
+    // Method changed to PATCH
+    const response = await axios.patch(`${API_URL}/favProperty/remove`, 
+      { propertyId }, // Request body
+      { headers: getAuthHeaders() } // Headers
+    );
+    return response.data; // Assuming backend returns some confirmation
+  } catch (error) {
+    console.error(`Error removing property ${propertyId} from favourites:`, error);
+    if (axios.isAxiosError(error) && error.response) {
+      throw error.response.data.message || error.response.data || error;
+    }
+    throw error;
+  }
+};
+
+export const getRecommendedProperties = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/recommendProperty/`, { 
+      headers: getAuthHeaders(),
+    });
+    // Updated to look for "recommendProperty" key based on user's JSON response
+    if (response.data && Array.isArray(response.data.recommendProperty)) {
+      return response.data.recommendProperty; // This will be an array of recommendation objects
+    }
+    // Fallback checks (less likely to be hit now)
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (response.data && Array.isArray(response.data.properties)) {
+      return response.data.properties;
+    }
+    if (response.data && Array.isArray(response.data.recommendedProperties)) {
+      return response.data.recommendedProperties;
+    }
+    console.warn('Unexpected response structure for recommended properties or recommendProperty array not found:', response.data);
+    return []; 
+  } catch (error) {
+    console.error('Error fetching recommended properties:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      throw error.response.data.message || error.response.data || error;
+    }
+    throw error;
+  }
+};
+
+export const getMyListedProperties = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/listingProperty/my-properties`, {
+      headers: getAuthHeaders(),
+    });
+    // Assuming the backend returns an array of properties directly or nested under 'properties'
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (response.data && Array.isArray(response.data.properties)) {
+      return response.data.properties;
+    }
+    console.warn('Unexpected response structure for my listed properties:', response.data);
+    return []; 
+  } catch (error) {
+    console.error('Error fetching my listed properties:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      throw error.response.data.message || error.response.data || error;
+    }
+    throw error;
+  }
+};
+
+export const deleteProperty = async (propertyId: string) => {
+  try {
+    const response = await axios.delete(`${API_URL}/listingProperty/property/${propertyId}`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data; // Assuming backend returns some confirmation message
+  } catch (error) {
+    console.error(`Error deleting property ${propertyId}:`, error);
+    if (axios.isAxiosError(error) && error.response) {
+      throw error.response.data.message || error.response.data || error;
+    }
+    throw error;
+  }
+};
+
+export const updateProperty = async (propertyId: string, propertyData: Partial<NewPropertyData>) => {
+  try {
+    const response = await axios.patch(`${API_URL}/listingProperty/property/${propertyId}`, propertyData, {
+      headers: getAuthHeaders()
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating property:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      throw error.response.data.message || error.response.data || error;
+    }
+    throw error;
+  }
+};
+
+// ... (updateProperty service will be added later) ... 

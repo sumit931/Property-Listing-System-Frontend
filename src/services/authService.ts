@@ -32,24 +32,21 @@ export const logout = () => {
 export const getCurrentUser = () => {
   const token = localStorage.getItem('token');
   if (token) {
-    // Placeholder for JWT decoding. Replace with actual JWT decoding logic.
-    // Example with a hypothetical jwt_decode function:
-    // try {
-    //   const decodedToken: { _id: string, email: string, iat: number, exp: number } = jwt_decode(token);
-    //   return { token, _id: decodedToken._id, email: decodedToken.email };
-    // } catch (error) {
-    //   console.error("Failed to decode token:", error);
-    //   localStorage.removeItem('token'); // Invalid token, remove it
-    //   return null;
-    // }
+    try {
+      // Decode the JWT token (it's in format: header.payload.signature)
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
 
-    // For demonstration, assuming token itself contains some user info or is an object after decoding
-    // YOU MUST REPLACE THIS WITH ACTUAL JWT DECODING that extracts user._id
-    // This is a placeholder and will not work without a real decode function.
-    // Let's simulate that the decoded token might have an _id directly for now.
-    // This is NOT secure and NOT how JWTs work directly but for flow purposes:
-    const decodedUser = { _id: 'mockUserId-replace-me', token: token }; // SIMULATED
-    return decodedUser;
+      const decodedToken = JSON.parse(jsonPayload);
+      return { _id: decodedToken._id, token: token };
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+      localStorage.removeItem('token'); // Invalid token, remove it
+      return null;
+    }
   }
   return null;
 }; 

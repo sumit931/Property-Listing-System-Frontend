@@ -5,9 +5,8 @@ import {
   searchProperties
 } from '../services/propertyService';
 import PropertyCard from '../components/PropertyCard';
-import CreatePropertyModal from '../components/CreatePropertyModal';
 import {
-  Box, Typography, CircularProgress, /* Grid, */ TextField, Button,
+  Box, Typography, CircularProgress, TextField, Button,
   FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText, Autocomplete, IconButton
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material/Select';
@@ -111,7 +110,6 @@ const SearchPropertyPage: React.FC = () => {
   const [loadingInitialData, setLoadingInitialData] = useState(true);
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [filters, setFilters] = useState<Filters>(initialFilters);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -264,9 +262,6 @@ const SearchPropertyPage: React.FC = () => {
             Search Properties
           </Typography>
         </Box>
-        <Button variant="contained" color="primary" onClick={() => setIsCreateModalOpen(true)}>
-          List Property
-        </Button>
       </Box>
       
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: ITEM_SPACING, mb: 3 }}>
@@ -458,22 +453,11 @@ const SearchPropertyPage: React.FC = () => {
               property={property} 
               onEdit={handleEditProperty} 
               onDelete={handleDeleteProperty} 
+              showFavouriteActions={true}
             />
           ))}
         </Box>
       )}
-
-      {/* Create Property Modal */}
-      <CreatePropertyModal 
-        open={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
-        onPropertyCreated={handlePropertyCreated}
-        propertyTypes={propertyTypes}
-        states={states}
-        cities={cities}
-        amenities={amenities}
-        tags={tags}
-      />
     </Box>
   );
 };

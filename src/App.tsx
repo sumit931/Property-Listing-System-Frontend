@@ -5,7 +5,8 @@ import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import SearchPropertyPage from './pages/SearchPropertyPage';
 import LikedPropertyPage from './pages/LikedPropertyPage';
-import SuggestedPropertyPage from './pages/SuggestedPropertyPage';
+import PropertyRecommendedPage from './pages/PropertyRecommendedPage';
+import MyListedPropertiesPage from './pages/MyListedPropertiesPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { getCurrentUser } from './services/authService';
 
@@ -60,10 +61,18 @@ const App: React.FC = () => {
           }
         />
         <Route 
-          path="/suggested-property" 
+          path="/property-recommended"
           element={
             <ProtectedRoute>
-              <SuggestedPropertyPage />
+              <PropertyRecommendedPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/my-listed-properties"
+          element={
+            <ProtectedRoute>
+              <MyListedPropertiesPage />
             </ProtectedRoute>
           }
         />
