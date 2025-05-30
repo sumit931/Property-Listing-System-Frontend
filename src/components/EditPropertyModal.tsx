@@ -14,9 +14,13 @@ interface PropertyType { _id: string; type: string; }
 interface Amenity { _id: string; name: string; }
 interface Tag { _id: string; name: string; }
 
-const furnishedOptions = ['Furnished', 'Unfurnished', 'Semi'];
-const listingTypeOptions = ['sale', 'rent'];
-const listedByOptions = ['Builder', 'Owner', 'Agent'];
+const furnishedOptions = ['Furnished', 'Unfurnished', 'Semi'] as const;
+const listingTypeOptions = ['sale', 'rent'] as const;
+const listedByOptions = ['Builder', 'Owner', 'Agent'] as const;
+
+type FurnishedType = typeof furnishedOptions[number];
+type ListingType = typeof listingTypeOptions[number];
+type ListedByType = typeof listedByOptions[number];
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -57,20 +61,20 @@ const EditPropertyModal: React.FC<EditPropertyModalProps> = ({
   tags
 }) => {
   const [formData, setFormData] = useState<Partial<NewPropertyData>>({
-    title: property.title,
-    typeId: property.typeId || '',
-    price: property.price,
-    stateId: property.stateId || '',
-    cityId: property.cityId || '',
-    areaSqFt: property.areaSqFt,
-    bedrooms: property.bedrooms,
-    bathrooms: property.bathrooms,
-    amenityIds: property.amenityIds || [],
-    tagIds: property.tagIds || [],
-    furnished: property.furnished as 'Furnished' | 'Unfurnished' | 'Semi',
-    availableFrom: property.availableFrom,
-    listedBy: property.listedBy as 'Builder' | 'Owner' | 'Agent',
-    listingType: property.listingType
+    title: property.title || '',
+    typeId: propertyTypes.find(pt => pt.type === property.type)?._id || '',
+    price: property.price || 0,
+    stateId: states.find(s => s.state === property.state)?._id || '',
+    cityId: cities.find(c => c.city === property.city)?._id || '',
+    areaSqFt: property.areaSqFt || 0,
+    bedrooms: property.bedrooms || 0,
+    bathrooms: property.bathrooms || 0,
+    amenityIds: property.amenities || [],
+    tagIds: property.tags || [],
+    furnished: (property.furnished as FurnishedType) || 'Unfurnished',
+    availableFrom: property.availableFrom || new Date().toISOString().split('T')[0],
+    listedBy: (property.listedBy as ListedByType) || 'Owner',
+    listingType: (property.listingType as ListingType) || 'sale'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,30 +82,30 @@ const EditPropertyModal: React.FC<EditPropertyModalProps> = ({
   useEffect(() => {
     if (open) {
       setFormData({
-        title: property.title,
-        typeId: property.typeId || '',
-        price: property.price,
-        stateId: property.stateId || '',
-        cityId: property.cityId || '',
-        areaSqFt: property.areaSqFt,
-        bedrooms: property.bedrooms,
-        bathrooms: property.bathrooms,
-        amenityIds: property.amenityIds || [],
-        tagIds: property.tagIds || [],
-        furnished: property.furnished as 'Furnished' | 'Unfurnished' | 'Semi',
-        availableFrom: property.availableFrom,
-        listedBy: property.listedBy as 'Builder' | 'Owner' | 'Agent',
-        listingType: property.listingType
+        title: property.title || '',
+        typeId: propertyTypes.find(pt => pt.type === property.type)?._id || '',
+        price: property.price || 0,
+        stateId: states.find(s => s.state === property.state)?._id || '',
+        cityId: cities.find(c => c.city === property.city)?._id || '',
+        areaSqFt: property.areaSqFt || 0,
+        bedrooms: property.bedrooms || 0,
+        bathrooms: property.bathrooms || 0,
+        amenityIds: property.amenities || [],
+        tagIds: property.tags || [],
+        furnished: (property.furnished as FurnishedType) || 'Unfurnished',
+        availableFrom: property.availableFrom || new Date().toISOString().split('T')[0],
+        listedBy: (property.listedBy as ListedByType) || 'Owner',
+        listingType: (property.listingType as ListingType) || 'sale'
       });
       setError(null);
     }
-  }, [open, property]);
+  }, [open, property, propertyTypes, states, cities]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = event.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value
+      [name]: type === 'number' ? (value === '' ? 0 : Number(value)) : value
     }));
   };
 
@@ -143,41 +147,117 @@ const EditPropertyModal: React.FC<EditPropertyModalProps> = ({
         <Typography variant="h6" component="h2" gutterBottom>Edit Property</Typography>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         
-        <TextField fullWidth label="Title" name="title" value={formData.title} onChange={handleInputChange} margin="normal" required />
+        <TextField 
+          fullWidth 
+          label="Title" 
+          name="title" 
+          value={formData.title} 
+          onChange={handleInputChange} 
+          margin="normal" 
+          required 
+        />
         
         <FormControl fullWidth margin="normal" required>
           <InputLabel>Property Type</InputLabel>
-          <Select name="typeId" value={formData.typeId} label="Property Type" onChange={handleSelectChange}>
-            {propertyTypes.map(pt => <MenuItem key={pt._id} value={pt._id}>{pt.type}</MenuItem>)}
+          <Select 
+            name="typeId" 
+            value={formData.typeId} 
+            label="Property Type" 
+            onChange={handleSelectChange}
+          >
+            {propertyTypes.map(pt => (
+              <MenuItem key={pt._id} value={pt._id}>{pt.type}</MenuItem>
+            ))}
           </Select>
         </FormControl>
 
-        <TextField fullWidth label="Price" name="price" type="number" value={formData.price || ''} onChange={handleInputChange} margin="normal" required InputProps={{ inputProps: { min: 1 } }} />
+        <TextField 
+          fullWidth 
+          label="Price" 
+          name="price" 
+          type="number" 
+          value={formData.price} 
+          onChange={handleInputChange} 
+          margin="normal" 
+          required 
+          InputProps={{ inputProps: { min: 1 } }} 
+        />
 
         <FormControl fullWidth margin="normal" required>
           <InputLabel>State</InputLabel>
-          <Select name="stateId" value={formData.stateId} label="State" onChange={handleSelectChange}>
-            {states.map(s => <MenuItem key={s._id} value={s._id}>{s.state}</MenuItem>)}
+          <Select 
+            name="stateId" 
+            value={formData.stateId} 
+            label="State" 
+            onChange={handleSelectChange}
+          >
+            {states.map(s => (
+              <MenuItem key={s._id} value={s._id}>{s.state}</MenuItem>
+            ))}
           </Select>
         </FormControl>
 
         <FormControl fullWidth margin="normal" required>
           <InputLabel>City</InputLabel>
-          <Select name="cityId" value={formData.cityId} label="City" onChange={handleSelectChange}>
-            {Array.isArray(cities) && cities.map(c => <MenuItem key={c._id} value={c._id}>{c.city}</MenuItem>)}
+          <Select 
+            name="cityId" 
+            value={formData.cityId} 
+            label="City" 
+            onChange={handleSelectChange}
+          >
+            {cities.map(c => (
+              <MenuItem key={c._id} value={c._id}>{c.city}</MenuItem>
+            ))}
           </Select>
         </FormControl>
 
-        <TextField fullWidth label="Area (sq ft)" name="areaSqFt" type="number" value={formData.areaSqFt || ''} onChange={handleInputChange} margin="normal" required InputProps={{ inputProps: { min: 1 } }} />
+        <TextField 
+          fullWidth 
+          label="Area (sq ft)" 
+          name="areaSqFt" 
+          type="number" 
+          value={formData.areaSqFt} 
+          onChange={handleInputChange} 
+          margin="normal" 
+          required 
+          InputProps={{ inputProps: { min: 1 } }} 
+        />
 
-        <TextField fullWidth label="Bedrooms" name="bedrooms" type="number" value={formData.bedrooms || ''} onChange={handleInputChange} margin="normal" required InputProps={{ inputProps: { min: 0 } }} />
+        <TextField 
+          fullWidth 
+          label="Bedrooms" 
+          name="bedrooms" 
+          type="number" 
+          value={formData.bedrooms} 
+          onChange={handleInputChange} 
+          margin="normal" 
+          required 
+          InputProps={{ inputProps: { min: 0 } }} 
+        />
 
-        <TextField fullWidth label="Bathrooms" name="bathrooms" type="number" value={formData.bathrooms || ''} onChange={handleInputChange} margin="normal" required InputProps={{ inputProps: { min: 0 } }} />
+        <TextField 
+          fullWidth 
+          label="Bathrooms" 
+          name="bathrooms" 
+          type="number" 
+          value={formData.bathrooms} 
+          onChange={handleInputChange} 
+          margin="normal" 
+          required 
+          InputProps={{ inputProps: { min: 0 } }} 
+        />
 
         <FormControl fullWidth margin="normal">
           <InputLabel>Furnished Status</InputLabel>
-          <Select name="furnished" value={formData.furnished} label="Furnished Status" onChange={handleSelectChange}>
-            {furnishedOptions.map(option => <MenuItem key={option} value={option}>{option}</MenuItem>)}
+          <Select 
+            name="furnished" 
+            value={formData.furnished} 
+            label="Furnished Status" 
+            onChange={handleSelectChange}
+          >
+            {furnishedOptions.map(option => (
+              <MenuItem key={option} value={option}>{option}</MenuItem>
+            ))}
           </Select>
         </FormControl>
 
@@ -197,15 +277,29 @@ const EditPropertyModal: React.FC<EditPropertyModalProps> = ({
 
         <FormControl fullWidth margin="normal">
           <InputLabel>Listed By</InputLabel>
-          <Select name="listedBy" value={formData.listedBy} label="Listed By" onChange={handleSelectChange}>
-            {listedByOptions.map(option => <MenuItem key={option} value={option}>{option}</MenuItem>)}
+          <Select 
+            name="listedBy" 
+            value={formData.listedBy} 
+            label="Listed By" 
+            onChange={handleSelectChange}
+          >
+            {listedByOptions.map(option => (
+              <MenuItem key={option} value={option}>{option}</MenuItem>
+            ))}
           </Select>
         </FormControl>
 
         <FormControl fullWidth margin="normal">
           <InputLabel>Listing Type</InputLabel>
-          <Select name="listingType" value={formData.listingType} label="Listing Type" onChange={handleSelectChange}>
-            {listingTypeOptions.map(option => <MenuItem key={option} value={option}>{option}</MenuItem>)}
+          <Select 
+            name="listingType" 
+            value={formData.listingType} 
+            label="Listing Type" 
+            onChange={handleSelectChange}
+          >
+            {listingTypeOptions.map(option => (
+              <MenuItem key={option} value={option}>{option}</MenuItem>
+            ))}
           </Select>
         </FormControl>
 

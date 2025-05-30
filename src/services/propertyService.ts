@@ -224,11 +224,11 @@ export const getRecommendedProperties = async () => {
     const response = await axios.get(`${API_URL}/recommendProperty/`, { 
       headers: getAuthHeaders(),
     });
-    // Updated to look for "recommendProperty" key based on user's JSON response
-    if (response.data && Array.isArray(response.data.recommendProperty)) {
-      return response.data.recommendProperty; // This will be an array of recommendation objects
+    // Updated to look for "recommedProperty" key based on the actual API response
+    if (response.data && Array.isArray(response.data.recommedProperty)) {
+      return response.data.recommedProperty; // This will be an array of recommendation objects
     }
-    // Fallback checks (less likely to be hit now)
+    // Fallback checks
     if (Array.isArray(response.data)) {
       return response.data;
     }
@@ -238,7 +238,7 @@ export const getRecommendedProperties = async () => {
     if (response.data && Array.isArray(response.data.recommendedProperties)) {
       return response.data.recommendedProperties;
     }
-    console.warn('Unexpected response structure for recommended properties or recommendProperty array not found:', response.data);
+    console.warn('Unexpected response structure for recommended properties or recommedProperty array not found:', response.data);
     return []; 
   } catch (error) {
     console.error('Error fetching recommended properties:', error);
