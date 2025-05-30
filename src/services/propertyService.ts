@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = '/api'; // This will be rewritten by Vite proxy to remove /api before hitting backend
+// const API_URL = '/api'; // This will be rewritten by Vite proxy to remove /api before hitting backend
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Helper to get token and create auth headers
 const getAuthHeaders = () => {
