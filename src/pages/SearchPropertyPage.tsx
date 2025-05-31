@@ -251,6 +251,66 @@ const SearchPropertyPage: React.FC = () => {
           <TextField fullWidth label="Min Bathrooms" name="minBathrooms" type="number" value={filters.minBathrooms} onChange={handleInputChange} />
         </Box>
 
+        {/* State Selection */}
+        <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)`, md: `calc(16.666% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
+          <FormControl fullWidth>
+            <InputLabel>State</InputLabel>
+            <Select
+              name="stateId"
+              value={filters.stateId}
+              label="State"
+              onChange={handleSelectChange}
+            >
+              <MenuItem value="">Any</MenuItem>
+              {states.map((state) => (
+                <MenuItem key={state._id} value={state._id}>
+                  {state.state}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* City Selection */}
+        <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)`, md: `calc(16.666% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
+          <FormControl fullWidth>
+            <InputLabel>City</InputLabel>
+            <Select
+              name="cityId"
+              value={filters.cityId}
+              label="City"
+              onChange={handleSelectChange}
+            >
+              <MenuItem value="">Any</MenuItem>
+              {cities.map((city) => (
+                <MenuItem key={city._id} value={city._id}>
+                  {city.city}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* Property Type Selection */}
+        <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)`, md: `calc(16.666% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
+          <FormControl fullWidth>
+            <InputLabel>Property Type</InputLabel>
+            <Select
+              name="typeId"
+              value={filters.typeId}
+              label="Property Type"
+              onChange={handleSelectChange}
+            >
+              <MenuItem value="">Any</MenuItem>
+              {propertyTypes.map((type) => (
+                <MenuItem key={type._id} value={type._id}>
+                  {type.type}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
         {/* Furnished Status */}
         <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)`, md: `calc(33.333% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
           <FormControl fullWidth>

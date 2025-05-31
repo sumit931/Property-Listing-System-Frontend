@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Chip, Stack, Tooltip } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActions, Button, IconButton} from '@mui/material';
 import { getCurrentUser } from '../services/authService';
 import type { Property } from '../pages/SearchPropertyPage'; // Import Property interface
 import { addToFavourites } from '../services/propertyService'; // Add this
