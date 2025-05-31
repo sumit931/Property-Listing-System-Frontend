@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Box, Typography, Card, CardContent, CardActions, Button, IconButton } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Chip, Stack, Tooltip } from '@mui/material';
 import { getCurrentUser } from '../services/authService';
 import type { Property } from '../pages/SearchPropertyPage'; // Import Property interface
 import { addToFavourites } from '../services/propertyService'; // Add this
 import RecommendPropertyModal from './RecommendPropertyModal';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+// import EditIcon from '@mui/icons-material/Edit';
+// import DeleteIcon from '@mui/icons-material/Delete';
 import ShareIcon from '@mui/icons-material/Share';
 
 // Removed local Property interface definition

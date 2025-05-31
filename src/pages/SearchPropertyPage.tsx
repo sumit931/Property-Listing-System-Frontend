@@ -167,20 +167,13 @@ const SearchPropertyPage: React.FC = () => {
     });
   };
   
-  const handleAmenityChange = (event: React.SyntheticEvent, value: Amenity[]) => {
-    setFilters({
-        ...filters,
-        amenityIds: value.map(option => option._id),
-    });
+  const handleAmenityChange = (_event: React.SyntheticEvent, value: Amenity[]) => {
+    setFilters(prev => ({ ...prev, amenityIds: value.map(option => option._id) }));
   };
 
-  const handleTagChange = (event: React.SyntheticEvent, value: Tag[]) => {
-    setFilters({
-        ...filters,
-        tagIds: value.map(option => option._id),
-    });
-};
-
+  const handleTagChange = (_event: React.SyntheticEvent, value: Tag[]) => {
+    setFilters(prev => ({ ...prev, tagIds: value.map(option => option._id) }));
+  };
 
   const handleSearch = async () => {
     setLoadingSearch(true);
@@ -217,32 +210,6 @@ const SearchPropertyPage: React.FC = () => {
     // }
   };
 
-  const handlePropertyCreated = (newlyCreatedProperty: any) => { // Use 'any' temporarily for logging robustness
-    console.log("Data received in handlePropertyCreated (raw):", JSON.stringify(newlyCreatedProperty, null, 2));
-
-    // Adapt this based on your actual API response structure for POST /listingProperty/property
-    // Common patterns:
-    // 1. API returns the created property object directly.
-    // 2. API returns { message: "...", property: { ... } } or { data: { ... } }
-    const propertyToAdd = newlyCreatedProperty.property || newlyCreatedProperty.data || newlyCreatedProperty;
-    
-    console.log("Attempting to add this property to state:", JSON.stringify(propertyToAdd, null, 2));
-
-    // Basic validation of the object before adding to state
-    if (!propertyToAdd || typeof propertyToAdd._id === 'undefined' || !propertyToAdd.title) {
-      console.error(
-        "Property data to be added is invalid or missing critical fields (_id, title):", 
-        propertyToAdd
-      );
-      // Optionally, trigger a full refresh of properties from the server
-      // alert("Property listed, but UI refresh encountered an issue. Refreshing list...");
-      // handleSearch(); // This would re-fetch all based on current filters
-      return; 
-    }
-
-    setProperties(prev => [propertyToAdd as Property, ...prev]);
-  };
-
   const handleGoHome = () => {
     navigate('/');
   };
@@ -252,7 +219,7 @@ const SearchPropertyPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ p: ITEM_SPACING }}>
+    <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <IconButton onClick={handleGoHome} sx={{ mr: 1 }} aria-label="go back to home">
@@ -264,60 +231,8 @@ const SearchPropertyPage: React.FC = () => {
         </Box>
       </Box>
       
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: ITEM_SPACING, mb: 3 }}>
-        {/* Title */}
-        <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)`, md: `calc(33.333% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
-          <TextField fullWidth label="Title" name="title" value={filters.title} onChange={handleInputChange} />
-        </Box>
-
-        {/* Property Type */}
-        <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)`, md: `calc(33.333% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
-          <FormControl fullWidth>
-            <InputLabel>Property Type</InputLabel>
-            <Select name="typeId" value={filters.typeId} label="Property Type" onChange={handleSelectChange}>
-              <MenuItem value=""><em>All</em></MenuItem>
-              {propertyTypes.map((type) => (
-                <MenuItem key={type._id} value={type._id}>{type.type}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-
-        {/* State */}
-        <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)`, md: `calc(33.333% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
-          <FormControl fullWidth>
-            <InputLabel>State</InputLabel>
-            <Select name="stateId" value={filters.stateId} label="State" onChange={handleSelectChange}>
-              <MenuItem value=""><em>All</em></MenuItem>
-              {states.map((state) => (
-                <MenuItem key={state._id} value={state._id}>{state.state}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-
-        {/* City */}
-        <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)`, md: `calc(33.333% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
-          <FormControl fullWidth>
-            <InputLabel>City</InputLabel>
-            <Select 
-              name="cityId" 
-              value={filters.cityId} 
-              label="City" 
-              onChange={handleSelectChange} 
-              disabled={!filters.stateId && cities.length === 0}
-            >
-              <MenuItem value=""><em>All</em></MenuItem>
-              {Array.isArray(cities) 
-                ? cities.map((city) => (
-                    <MenuItem key={city._id} value={city._id}>{city.city}</MenuItem>
-                  ))
-                : null /* Render nothing if not an array */
-              }
-            </Select>
-          </FormControl>
-        </Box>
-
+      {/* Filters Section */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: ITEM_SPACING, mb: 4 }}>
         {/* Min Price */}
         <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)`, md: `calc(16.666% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
           <TextField fullWidth label="Min Price" name="minPrice" type="number" value={filters.minPrice} onChange={handleInputChange} />
@@ -384,55 +299,55 @@ const SearchPropertyPage: React.FC = () => {
         
         {/* Amenities */}
         <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
-            <Autocomplete
-                multiple
-                options={amenities}
-                getOptionLabel={(option) => option.name}
-                value={amenities.filter(option => filters.amenityIds.includes(option._id))}
-                onChange={handleAmenityChange}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        variant="outlined"
-                        label="Amenities"
-                        placeholder="Select Amenities"
-                    />
-                )}
-                renderOption={(props, option, { selected }) => (
-                    <li {...props}>
-                        <Checkbox checked={selected} />
-                        <ListItemText primary={option.name} />
-                    </li>
-                )}
-            />
+          <Autocomplete
+            multiple
+            options={amenities}
+            getOptionLabel={(option) => option.name}
+            value={amenities.filter(option => filters.amenityIds.includes(option._id))}
+            onChange={handleAmenityChange}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Amenities"
+                placeholder="Select Amenities"
+              />
+            )}
+            renderOption={(props, option) => (
+              <li {...props} key={option._id}>
+                <Checkbox checked={filters.amenityIds.includes(option._id)} />
+                <ListItemText primary={option.name} />
+              </li>
+            )}
+          />
         </Box>
 
         {/* Tags */}
         <Box sx={{ width: { xs: '100%', sm: `calc(50% - ${ITEM_SPACING*4}px)` }, p: ITEM_SPACING / 2 }}>
-             <Autocomplete
-                multiple
-                options={tags}
-                getOptionLabel={(option) => option.name}
-                value={tags.filter(option => filters.tagIds.includes(option._id))}
-                onChange={handleTagChange}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        variant="outlined"
-                        label="Tags"
-                        placeholder="Select Tags"
-                    />
-                )}
-                 renderOption={(props, option, { selected }) => (
-                    <li {...props}>
-                        <Checkbox checked={selected} />
-                        <ListItemText primary={option.name} />
-                    </li>
-                )}
-            />
+          <Autocomplete
+            multiple
+            options={tags}
+            getOptionLabel={(option) => option.name}
+            value={tags.filter(option => filters.tagIds.includes(option._id))}
+            onChange={handleTagChange}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Tags"
+                placeholder="Select Tags"
+              />
+            )}
+            renderOption={(props, option) => (
+              <li {...props} key={option._id}>
+                <Checkbox checked={filters.tagIds.includes(option._id)} />
+                <ListItemText primary={option.name} />
+              </li>
+            )}
+          />
         </Box>
 
-        {/* Action Buttons: This is an item of the main grid, and a container for its own items */}
+        {/* Action Buttons */}
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: ITEM_SPACING, mt: ITEM_SPACING, p: ITEM_SPACING / 2 }}>
           <Button variant="outlined" onClick={handleResetFilters} disabled={loadingSearch}>Reset</Button>
           <Button variant="contained" onClick={handleSearch} disabled={loadingSearch}>
@@ -462,4 +377,4 @@ const SearchPropertyPage: React.FC = () => {
   );
 };
 
-export default SearchPropertyPage; 
+export default SearchPropertyPage;

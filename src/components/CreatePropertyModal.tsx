@@ -94,11 +94,11 @@ const CreatePropertyModal: React.FC<CreatePropertyModalProps> = ({
     }));
   };
 
-  const handleAmenityChange = (event: React.SyntheticEvent, value: Amenity[]) => {
+  const handleAmenityChange = (_event: React.SyntheticEvent, value: Amenity[]) => {
     setFormData(prev => ({ ...prev, amenityIds: value.map(option => option._id) }));
   };
 
-  const handleTagChange = (event: React.SyntheticEvent, value: Tag[]) => {
+  const handleTagChange = (_event: React.SyntheticEvent, value: Tag[]) => {
     setFormData(prev => ({ ...prev, tagIds: value.map(option => option._id) }));
   };
 

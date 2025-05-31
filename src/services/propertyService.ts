@@ -84,15 +84,13 @@ export const searchProperties = async (filters: any) => {
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== '') {
         if (Array.isArray(value)) {
-          value.forEach(v => queryParams.append(key, v as string));
+          value.forEach(v => queryParams.append(key === 'amenities' ? 'amenityIds' : key === 'tags' ? 'tagIds' : key, v as string));
         } else {
-          queryParams.append(key, value as string);
+          queryParams.append(key === 'amenities' ? 'amenityIds' : key === 'tags' ? 'tagIds' : key, value as string);
         }
       }
     });
-    // Corrected path to include /property before query parameters
     const response = await axios.get(`${API_URL}/listingProperty/property?${queryParams.toString()}`, { headers: getAuthHeaders() });
-    // Assuming the response structure is { properties: [...] }
     return Array.isArray(response.data.properties) ? response.data.properties : [];
   } catch (error) {
     console.error('Error searching properties:', error);
