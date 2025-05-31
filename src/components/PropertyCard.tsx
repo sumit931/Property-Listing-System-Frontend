@@ -66,7 +66,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
     }
   };
 
-  const isOwner = isExplicitlyOwner || (currentUser && property.createdBy === currentUser._id);
+  // const isOwner = isExplicitlyOwner || (currentUser && property.createdBy === currentUser._id);
 
   return (
     <>
