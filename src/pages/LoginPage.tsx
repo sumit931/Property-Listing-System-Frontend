@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/authService';
 import { TextField, Button, Container, Typography, Box, Alert, Paper } from '@mui/material';
 
@@ -68,6 +68,19 @@ const LoginPage: React.FC = () => {
             >
               Sign In
             </Button>
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                Don't have an account?
+              </Typography>
+              <Button
+                component={Link}
+                to="/register"
+                variant="outlined"
+                fullWidth
+              >
+                Sign Up
+              </Button>
+            </Box>
           </Box>
         </Paper>
       </Box>
